@@ -1,19 +1,28 @@
 import createHttpError, { isHttpError } from "http-errors";
 import dbPool from "../db";
+import { RowDataPacket } from "mysql2";
+
+export interface Flight extends RowDataPacket {
+  flight_id: number,
+  takeoff_date_time: number,
+  takeoff_airport: string,
+  landing_date_time: number,
+  landing_airport: string,
+  airplane_id: number
+}
 
 // Get data from the flight correspondant to flight_id
-export async function getFlightData(flightId: string) {
-
+export async function getFlightData(flightId: string): Promise<Flight> {
   try {
-    const [rows, _fields] = await dbPool.execute(
+    const [rows, _fields] = await dbPool.execute<Flight[]>(
       'SELECT * FROM flight WHERE flight_id = ?',
       [flightId]
     )
-    const flightData = rows;
-
+    const [flightData] = rows;
     if (!flightData) {
       throw createHttpError(404, '{}')
     }
+
     return flightData
   } catch (err) {
     if (isHttpError(err)) {

@@ -1,7 +1,9 @@
-// Function to group passengers by purchase_id
-export function groupByPurchase(passengers) {
-  let groupedPassengers =
-    passengers.reduce((groups, p) => {
+import { Passenger } from "../models/passengersModel";
+
+// Function to group passengers by their purchase_id
+export function groupByPurchase(passengers: Passenger[]) {
+  const groupedPassengers =
+    passengers.reduce((groups: Record<number, Passenger[]>, p: Passenger) => {
       if (!groups[p.purchase_id]) {
         groups[p.purchase_id] = [];
       }
@@ -9,12 +11,12 @@ export function groupByPurchase(passengers) {
       return groups;
     }, {});
 
-  // Transform into an array
-  groupedPassengers = Object.values(groupedPassengers)
+  // Transform into an array and sort the groups to have biggest on top
+  const arrayGroupedPassengers =
+    Object.values(groupedPassengers)
+      .sort((a: Passenger[], b: Passenger[]) => b.length - a.length)
 
-  //sort the groups to have biggest on top
-  groupedPassengers.sort((a, b) => b.length - a.length)
-  return groupedPassengers
+  return arrayGroupedPassengers
 }
 
 // Sort the grouped seats in the following format
@@ -22,11 +24,11 @@ export function groupByPurchase(passengers) {
 // 2. Groups with assigned seats (without kids)
 // 3. Groups without assigned seats (with kids)
 // 4. Groups without assigned seats (without kids)
-export function sortGroupedPassengers(passengersGrouped) {
-  let fixedGroupsWithKids = []
-  let fixedGroupsWithoutKids = []
-  let freeGroupsWithKids = []
-  let freeGroupsWithoutKids = []
+export function sortGroupedPassengers(passengersGrouped: Passenger[][]) {
+  let fixedGroupsWithKids: Passenger[][] = []
+  let fixedGroupsWithoutKids: Passenger[][] = []
+  let freeGroupsWithKids: Passenger[][] = []
+  let freeGroupsWithoutKids: Passenger[][] = []
 
   for (const group of passengersGrouped) {
     if (group.some(p => p.seat_id)) {

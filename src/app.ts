@@ -2,6 +2,7 @@ import express from 'express';
 import camelcaseKeys from 'camelcase-keys';
 import { isHttpError } from 'http-errors';
 import { getFlightData } from './models/flightModel';
+import { simulateCheckIn } from './checkIn';
 
 const app = express();
 
@@ -11,12 +12,12 @@ app.get('/flights/:id/passengers', async (req, res) => {
   const flightId = req.params.id
   try {
     let flight = await getFlightData(flightId)
-    // const passengers = await simulateCheckIn(flightId, flight.airplane_id)
+    const passengers = await simulateCheckIn(flightId, flight.airplane_id)
 
-    // flight = {
-    //   ...flight,
-    //   passengers: passengers
-    // }
+    flight = {
+      ...flight,
+      passengers: passengers
+    }
 
     // flight = camelcaseKeys(flight, { deep: true })
 
