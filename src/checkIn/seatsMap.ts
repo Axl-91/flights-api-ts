@@ -1,16 +1,25 @@
-import { getSeatsFromAirplaneWithSeatType } from "../models/seatsModel.js";
+import { Passenger } from "../models/passengersModel";
+import {
+  RowSeat,
+  SeatsByRow,
+  getSeatsFromAirplaneWithSeatType,
+} from "../models/seatsModel";
 
 // Check if the seat is assigned to some passenger
-function checkOccupied(passengers, seatId) {
-  return passengers.some(p => p.seat_id === seatId);
+function checkOccupied(passengers: Passenger[], seatId: number) {
+  return passengers.some((p) => p.seat_id === seatId);
 }
 
 // Create an array of seats separated by column and storing the quantity of free seats
-export async function createSeatsMap(passengers, airplaneId, seatsTypeId) {
-  const seats = await getSeatsFromAirplaneWithSeatType(airplaneId, seatsTypeId)
-  const grouped = {};
+export async function createSeatsMap(
+  passengers: Passenger[],
+  airplaneId: number,
+  seatsTypeId: number,
+) {
+  const seats = await getSeatsFromAirplaneWithSeatType(airplaneId, seatsTypeId);
+  const grouped: Record<number, SeatsByRow> = {};
 
-  const allColumns = [...new Set(seats.map(seat => seat.seat_column))].sort();
+  const allColumns = [...new Set(seats.map((seat) => seat.seat_column))].sort();
   const firstCol = allColumns[0].charCodeAt(0);
   const lastCol = allColumns[allColumns.length - 1].charCodeAt(0);
 
@@ -23,7 +32,7 @@ export async function createSeatsMap(passengers, airplaneId, seatsTypeId) {
       grouped[row] = {
         row,
         seats: [],
-        quantity: 0
+        quantity: 0,
       };
 
       // Fill all positions from first to last column with null
@@ -33,7 +42,7 @@ export async function createSeatsMap(passengers, airplaneId, seatsTypeId) {
     }
 
     // Calculate the index position for the column and add it to the seats
-    const actualCol = seat.seat_column.charCodeAt(0)
+    const actualCol = seat.seat_column.charCodeAt(0);
     const columnIndex = actualCol - firstCol;
     grouped[row].seats[columnIndex] = { seat_id: seat_id, occupied: occupied };
 
@@ -42,51 +51,62 @@ export async function createSeatsMap(passengers, airplaneId, seatsTypeId) {
   }
 
   const seatMap = Object.values(grouped).sort((a, b) => a.row - b.row);
-  return seatMap
+
+  return seatMap;
 }
 
-function seatExists(index, arraySeats) {
+function seatIsFree(index: number, arraySeats: (RowSeat | null)[]) {
   if (index >= 0 && index < arraySeats.length)
-    if (arraySeats[index])
-      return true
-  return false
+    if (arraySeats[index]) return !arraySeats[index].occupied;
+  return false;
 }
 
 // Given the array of seats from a row it will search for the best seat
 // The best seat is the one with the most adjacent unoccupied seats
-export function findBestFreeSeat(seats) {
-  let bestSeat = null
-  let regularFree = null
+export function findBestFreeSeat(seats: (RowSeat | null)[]) {
+  let bestSeat: RowSeat | null = null;
+  let regularFree: RowSeat | null = null;
 
   for (let i = 0; i < seats.length; i++) {
-    if (!seats[i] || seats[i].occupied) continue;
-    if (!regularFree) regularFree = seats[i]
+    const seat = seats[i];
 
-    let leftFree = seatExists(i - 1, seats) ? !seats[i - 1].occupied : false;
-    let rightFree = seatExists(i + 1, seats) ? !seats[i + 1].occupied : false;
+    if (!seat || seat.occupied) continue;
+    if (!regularFree) regularFree = seats[i];
+
+    const leftFree = seatIsFree(i - 1, seats);
+    const rightFree = seatIsFree(i + 1, seats);
 
     if (leftFree && rightFree) {
-      return seats[i]
+      return seat;
     } else if (leftFree || rightFree) {
-      bestSeat = seats[i]
+      bestSeat = seat;
     }
   }
-  bestSeat = bestSeat ? bestSeat : regularFree
+  bestSeat = bestSeat ? bestSeat : regularFree;
   return bestSeat;
 }
 
 // Given a passenger it searchs for it and returns the rown and col where is assigned
-export function getRowAndColFromPassenger(passenger, seatsMap) {
-  const seatAssigned = passenger.seat_id
-  const rowAssigned = seatsMap.findIndex(obj => obj.seats.some(s => s && s.seat_id === seatAssigned))
-  const colAssigned = seatsMap[rowAssigned].seats.findIndex(s => s && s.seat_id === seatAssigned)
+export function getRowAndColFromPassenger(
+  passenger: Passenger,
+  seatsMap: SeatsByRow[],
+) {
+  const seatAssigned = passenger.seat_id;
+  const rowAssigned = seatsMap.findIndex((obj) =>
+    obj.seats.some((s) => s && s.seat_id === seatAssigned),
+  );
+  const colAssigned = seatsMap[rowAssigned].seats.findIndex(
+    (s) => s && s.seat_id === seatAssigned,
+  );
 
-  return { rowAssigned, colAssigned }
+  return { rowAssigned, colAssigned };
 }
 
-
 // Given a row and column it gets the free seat that is closest to that one
-export function getFreeSeat(assignedPassengers, seatsMap) {
+export function getFreeSeat(
+  assignedPassengers: Passenger[],
+  seatsMap: SeatsByRow[],
+) {
   const rowsQuantity = seatsMap.length;
   const seatsQuantity = seatsMap[0].seats.length;
 
@@ -103,18 +123,25 @@ export function getFreeSeat(assignedPassengers, seatsMap) {
   ];
 
   // Expand outward with increasing offset
-  for (let offset = 1; offset < Math.max(rowsQuantity, seatsQuantity); offset++) {
+  for (
+    let offset = 1;
+    offset < Math.max(rowsQuantity, seatsQuantity);
+    offset++
+  ) {
     for (const { dr, dc } of directions) {
       for (const assignedPassenger of assignedPassengers) {
-        const { rowAssigned, colAssigned } = getRowAndColFromPassenger(assignedPassenger, seatsMap)
+        const { rowAssigned, colAssigned } = getRowAndColFromPassenger(
+          assignedPassenger,
+          seatsMap,
+        );
 
-        const r = rowAssigned + (dr * offset);
-        const c = colAssigned + (dc * offset);
+        const r = rowAssigned + dr * offset;
+        const c = colAssigned + dc * offset;
 
         if (r >= 0 && r < rowsQuantity && c >= 0 && c < seatsQuantity) {
           const newSeat = seatsMap[r].seats[c];
           if (newSeat && !newSeat.occupied) {
-            seatsMap[r].quantity--
+            seatsMap[r].quantity--;
             newSeat.occupied = true;
             return newSeat.seat_id;
           }
@@ -122,25 +149,32 @@ export function getFreeSeat(assignedPassengers, seatsMap) {
       }
     }
   }
+  throw new Error("Flight already full");
 }
 
 // Search for a seat that is adjacent to the one assigned to a passenger of their group
-export function getSeatNextToAdult(assignedPassengers, seatsMap) {
+export function getSeatNextToAdult(
+  assignedPassengers: Passenger[],
+  seatsMap: SeatsByRow[],
+) {
   const seatsQuantity = seatsMap[0].seats.length;
-  const adultAssigned = assignedPassengers.filter(p => p.age > 18)
+  const adultAssigned = assignedPassengers.filter((p) => p.age > 18);
 
   // We want directly adjacent so one column at right or one at left
-  const adjDirections = [1, -1]
+  const adjDirections = [1, -1];
 
   for (const assignedPassenger of adultAssigned) {
-    const { rowAssigned, colAssigned } = getRowAndColFromPassenger(assignedPassenger, seatsMap)
+    const { rowAssigned, colAssigned } = getRowAndColFromPassenger(
+      assignedPassenger,
+      seatsMap,
+    );
 
     for (const direction of adjDirections) {
-      const newCol = colAssigned + direction
+      const newCol = colAssigned + direction;
       if (newCol >= 0 && newCol < seatsQuantity) {
-        const newSeat = seatsMap[rowAssigned].seats[newCol]
+        const newSeat = seatsMap[rowAssigned].seats[newCol];
         if (newSeat && !newSeat.occupied) {
-          seatsMap[rowAssigned].quantity--
+          seatsMap[rowAssigned].quantity--;
           newSeat.occupied = true;
           return newSeat.seat_id;
         }
@@ -148,4 +182,3 @@ export function getSeatNextToAdult(assignedPassengers, seatsMap) {
     }
   }
 }
-

@@ -1,30 +1,36 @@
-import { getAllSeatTypesIdsFromPassengers, getPassengersFromFlightWithType, Passenger, SeatType } from "../models/passengersModel"
-import { assignPassengers } from "./assignSeats.js";
+import {
+  getAllSeatTypesIdsFromPassengers,
+  getPassengersFromFlightWithType,
+  Passenger,
+  SeatType,
+} from "../models/passengersModel";
+import { assignPassengers } from "./assignSeats";
 import { groupByPurchase, sortGroupedPassengers } from "./passengers";
-import { createSeatsMap } from "./seatsMap.js";
+import { createSeatsMap } from "./seatsMap";
 
 // Given a flight and an airplaine it will simulate the seat assignments for all passengers
 export async function simulateCheckIn(flightId: string, airplaneId: number) {
-  let passengersWithSeats: Passenger[] = []
-  let seatTypesIds =
-    (await getAllSeatTypesIdsFromPassengers(flightId))
-      .map((st: SeatType) => st.seat_type_id)
-
+  const passengersWithSeats: Passenger[] = [];
+  const seatTypesIds = (await getAllSeatTypesIdsFromPassengers(flightId)).map(
+    (st: SeatType) => st.seat_type_id,
+  );
 
   for (const seatTypeId of seatTypesIds) {
     // Get Passengers for flight and with the correspondat seat type
-    const passengers = await getPassengersFromFlightWithType(flightId, seatTypeId)
+    const passengers = await getPassengersFromFlightWithType(
+      flightId,
+      seatTypeId,
+    );
     // Group the passengers by their purchase id
-    const groupedPassengers = groupByPurchase(passengers)
+    const groupedPassengers = groupByPurchase(passengers);
     // Sort this passengers
-    const sortedPassengers = sortGroupedPassengers(groupedPassengers)
+    const sortedPassengers = sortGroupedPassengers(groupedPassengers);
     // Create list for all seats for an easily assignment
-    // const seatsMap = await createSeatsMap(passengers, airplaneId, seatTypeId)
+    const seatsMap = await createSeatsMap(passengers, airplaneId, seatTypeId);
 
-    // const passengersAssigned = assignPassengers(sortedPassengers, seatsMap)
+    const passengersAssigned = assignPassengers(sortedPassengers, seatsMap);
 
-    // passengersWithSeats.push(...passengersAssigned)
-    console.log(sortedPassengers)
+    passengersWithSeats.push(...passengersAssigned);
   }
-  return passengersWithSeats
+  return passengersWithSeats;
 }

@@ -1,48 +1,47 @@
-import express from 'express';
-import camelcaseKeys from 'camelcase-keys';
-import { isHttpError } from 'http-errors';
-import { getFlightData } from './models/flightModel';
-import { simulateCheckIn } from './checkIn';
+import express from "express";
+import camelcaseKeys from "camelcase-keys";
+import { isHttpError } from "http-errors";
+import { getFlightData } from "./models/flightModel";
+import { simulateCheckIn } from "./checkIn";
 
 const app = express();
 
 app.use(express.json());
 
-app.get('/flights/:id/passengers', async (req, res) => {
-  const flightId = req.params.id
+app.get("/flights/:id/passengers", async (req, res) => {
+  const flightId = req.params.id;
   try {
-    let flight = await getFlightData(flightId)
-    const passengers = await simulateCheckIn(flightId, flight.airplane_id)
+    const flight = await getFlightData(flightId);
+    const passengers = await simulateCheckIn(flightId, flight.airplane_id);
 
-    flight = {
+    const flightWithPassengers = {
       ...flight,
-      passengers: passengers
-    }
+      passengers: passengers,
+    };
 
-    // flight = camelcaseKeys(flight, { deep: true })
+    const flightResponse = camelcaseKeys(flightWithPassengers, { deep: true });
 
     res.json({
       code: 200,
-      data: flight
+      data: flightResponse,
     });
   } catch (err) {
     if (isHttpError(err)) {
-      res
-        .status(err.status || 400)
-        .json({
-          code: err.status || 400,
-          data: err.message || {},
-        })
+      res.status(err.status || 400).json({
+        code: err.status || 400,
+        data: err.message || {},
+      });
     } else {
+      console.error(err);
       res.status(400).json({ code: 400, data: "Unknown error" });
     }
   }
 });
 
-app.get('/', async (_req, res) => {
+app.get("/", (_req, res) => {
   res.json({
     code: 200,
-    message: 'Flight API',
+    message: "Flight API",
   });
 });
 
@@ -50,9 +49,8 @@ app.get('/', async (_req, res) => {
 app.use((_req, res) => {
   res.status(404).json({
     code: 404,
-    message: 'Route not found'
+    message: "Route not found",
   });
 });
 
 export default app;
-

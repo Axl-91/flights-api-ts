@@ -1,9 +1,9 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 // Load .env values
 dotenv.config();
 
-export const PORT = process.env.PORT || '3000';
+export const PORT = process.env.PORT || "3000";
 
 export const DB_CONFIG = {
   // DB config data

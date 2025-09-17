@@ -1,13 +1,13 @@
-import mysql from 'mysql2/promise'
-import { DB_CONFIG } from './config'
+import mysql from "mysql2/promise";
+import { DB_CONFIG } from "./config";
 
 const poolConfig = {
   ...DB_CONFIG,
   // Pool config data
   waitForConnections: true,
   connectionLimit: 5,
-}
+};
 
-const dbPool = mysql.createPool(poolConfig)
+const dbPool = mysql.createPool(poolConfig);
 
-export default dbPool
+export default dbPool;
