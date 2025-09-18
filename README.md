@@ -60,4 +60,6 @@ npm start
 
 ## Endpoints
 
-`/flights/:flight_id/passengers` : This will return the flight data with all the passengers with their seat assigned
+### `/flights/:flight_id/passengers` 
+
+This will return the flight data with all the passengers with their seat assigned
