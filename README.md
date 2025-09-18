@@ -2,6 +2,12 @@
 
 Migration from old API created in JS to TS
 
+## Description
+
+API that simulates a check-in for all the passengers of flight.
+
+Given an amount of passangers in a flight and assigned to a plane this API will simulate the best possible seatting of those persons in the plane.
+
 ## Setup
 
 Install dependencies
@@ -51,3 +57,7 @@ npm run dev
 npm build
 npm start
 ```
+
+## Endpoints
+
+`/flights/:flight_id/passengers` : This will return the flight data with all the passengers with their seat assigned
