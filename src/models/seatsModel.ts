@@ -1,7 +1,6 @@
-import { RowDataPacket } from "mysql2";
-import dbPool from "../db";
+import prisma from "../db";
 
-export interface Seat extends RowDataPacket {
+export interface Seat {
   seat_id: number;
   seat_column: string;
   seat_row: number;
@@ -24,13 +23,22 @@ export async function getSeatsFromAirplaneWithSeatType(
   typeId: number,
 ) {
   try {
-    const [seatsData] = await dbPool.execute<Seat[]>(
-      `SELECT seat_id, seat_column, seat_row
-      FROM seat WHERE airplane_id = ? AND seat_type_id = ?
-      ORDER BY seat_column, seat_row`,
-      [airplaneId, typeId],
-    );
-    return seatsData;
+    const seats: Seat[] = await prisma.seat.findMany({
+      where: {
+        airplane_id: airplaneId,
+        seat_type_id: typeId,
+      },
+      orderBy: [
+        { seat_column: 'asc' },
+        { seat_row: 'asc' },
+      ],
+      select: {
+        seat_id: true,
+        seat_column: true,
+        seat_row: true,
+      },
+    });
+    return seats;
   } catch (err) {
     console.error(err);
     throw err;

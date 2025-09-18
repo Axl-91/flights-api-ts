@@ -1,8 +1,7 @@
 import createHttpError, { isHttpError } from "http-errors";
-import dbPool from "../db";
-import { RowDataPacket } from "mysql2";
+import prisma from "../db";
 
-export interface Flight extends RowDataPacket {
+export interface Flight {
   flight_id: number;
   takeoff_date_time: number;
   takeoff_airport: string;
@@ -14,11 +13,10 @@ export interface Flight extends RowDataPacket {
 // Get data from the flight correspondant to flight_id
 export async function getFlightData(flightId: string): Promise<Flight> {
   try {
-    const [rows] = await dbPool.execute<Flight[]>(
-      "SELECT * FROM flight WHERE flight_id = ?",
-      [flightId],
-    );
-    const [flightData] = rows;
+    const flightData: Flight | null = await prisma.flight.findUnique({
+      where: { flight_id: Number(flightId) }
+    })
+
     if (!flightData) {
       throw createHttpError(404, "{}");
     }

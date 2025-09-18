@@ -1,0 +1,34 @@
+[
+  {
+    "flight_id": 1,
+    "takeoff_date_time": 1688207580,
+    "takeoff_airport": "Aeropuerto Internacional Arturo Merino Benitez, Chile",
+    "landing_date_time": 1688221980,
+    "landing_airport": "Aeropuerto Internacional Jorge Cháve, Perú",
+    "airplane_id": 1
+  },
+  {
+    "flight_id": 2,
+    "takeoff_date_time": 1688491980,
+    "takeoff_airport": "Aeropuerto Internacional Jorge Cháve, Perú",
+    "landing_date_time": 1688495580,
+    "landing_airport": "Aeropuerto Francisco Carlé, Perú",
+    "airplane_id": 2
+  },
+  {
+    "flight_id": 3,
+    "takeoff_date_time": 1688766182,
+    "takeoff_airport": "Aeropuerto El Tepual, Chile",
+    "landing_date_time": 1688772962,
+    "landing_airport": "Aeropuerto Internacional Arturo Merino Benitez, Chile",
+    "airplane_id": 2
+  },
+  {
+    "flight_id": 4,
+    "takeoff_date_time": 1689786902,
+    "takeoff_airport": "Aeropuerto Internacional Arturo Merino Benitez, Chile",
+    "landing_date_time": 1689819302,
+    "landing_airport": "Aeropuerto Internacional de la Ciudad de México, México",
+    "airplane_id": 1
+  }
+]

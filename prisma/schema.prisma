@@ -13,3 +13,86 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Airplane {
+  airplane_id Int    @id @default(autoincrement())
+  name        String
+
+  Flight Flight[]
+  Seat   Seat[]
+}
+
+model Flight {
+  flight_id         Int    @id @default(autoincrement())
+  takeoff_date_time Int
+  takeoff_airport   String
+  landing_date_time Int
+  landing_airport   String
+  airplane_id       Int
+
+  airplane     Airplane       @relation(fields: [airplane_id], references: [airplane_id], onDelete: Cascade, onUpdate: Restrict)
+  BoardingPass BoardingPass[]
+
+  @@index([airplane_id], name: "airplane_id_fl")
+}
+
+model Passenger {
+  passenger_id Int    @id @default(autoincrement())
+  dni          String
+  name         String
+  age          Int
+  country      String
+
+  boardingPasses BoardingPass[]
+}
+
+model Purchase {
+  purchase_id   Int @id @default(autoincrement())
+  purchase_date Int
+
+  boardingPasses BoardingPass[]
+}
+
+model Seat {
+  seat_id      Int    @id @default(autoincrement())
+  seat_column  String
+  seat_row     Int
+  seat_type_id Int
+  airplane_id  Int
+
+  seatType       SeatType       @relation(fields: [seat_type_id], references: [seat_type_id], onDelete: Cascade, onUpdate: Restrict)
+  airplane       Airplane       @relation(fields: [airplane_id], references: [airplane_id], onDelete: Cascade, onUpdate: Restrict)
+  boardingPasses BoardingPass[]
+
+  @@index([seat_type_id], name: "seat_type_id_se")
+  @@index([airplane_id], name: "airplane_id_se")
+}
+
+model SeatType {
+  seat_type_id Int    @id @default(autoincrement())
+  name         String
+  seats        Seat[]
+
+  boardingPasses BoardingPass[]
+}
+
+model BoardingPass {
+  boarding_pass_id Int  @id @default(autoincrement())
+  purchase_id      Int
+  passenger_id     Int
+  seat_type_id     Int
+  seat_id          Int?
+  flight_id        Int
+
+  purchase  Purchase  @relation(fields: [purchase_id], references: [purchase_id], onDelete: Cascade)
+  passenger Passenger @relation(fields: [passenger_id], references: [passenger_id], onDelete: Cascade)
+  seatType  SeatType  @relation(fields: [seat_type_id], references: [seat_type_id], onDelete: Cascade)
+  seat      Seat?     @relation(fields: [seat_id], references: [seat_id], onDelete: Cascade)
+  flight    Flight    @relation(fields: [flight_id], references: [flight_id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@index([purchase_id], name: "purchase_id_bp")
+  @@index([passenger_id], name: "passenger_id_bp")
+  @@index([seat_type_id], name: "seat_type_id_bp")
+  @@index([flight_id], name: "flight_id_bp")
+  @@index([seat_id], name: "seat_id_bp")
+}

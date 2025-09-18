@@ -1,13 +1,7 @@
-import mysql from "mysql2/promise";
-import { DB_CONFIG } from "./config";
+import { PrismaClient } from '../generated/prisma/client'
 
-const poolConfig = {
-  ...DB_CONFIG,
-  // Pool config data
-  waitForConnections: true,
-  connectionLimit: 5,
-};
+const prisma = new PrismaClient({
+  log: ['query', 'info', 'warn'],
+});
 
-const dbPool = mysql.createPool(poolConfig);
-
-export default dbPool;
+export default prisma;

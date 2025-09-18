@@ -1,19 +1,25 @@
-import { RowDataPacket } from "mysql2";
-import dbPool from "../db";
+import prisma from "../db";
 
-export interface Passenger extends RowDataPacket {
+export interface BoardingPass {
+  boarding_pass_id: number,
+  purchase_id: number,
+  seat_type_id: number,
+  seat_id: number | null,
+  passenger: PassengerAux
+}
+
+export interface PassengerAux {
   passenger_id: number;
-  dni: number;
+  dni: string;
   name: string;
   age: number;
   country: string;
-  boarding_pass_id: number;
-  purchase_id: number;
-  seat_type_id: number;
-  seat_id: number;
 }
 
-export interface SeatType extends RowDataPacket {
+export type Passenger =
+  PassengerAux & Omit<BoardingPass, 'passenger'>;
+
+export interface SeatType {
   seat_type_id: number;
 }
 
@@ -23,14 +29,37 @@ export async function getPassengersFromFlightWithType(
   seatsTypeId: number,
 ) {
   try {
-    const [passengersData] = await dbPool.execute<Passenger[]>(
-      `SELECT p.*, bp.boarding_pass_id, bp.purchase_id, bp.seat_type_id, bp.seat_id 
-            FROM boarding_pass bp
-            JOIN passenger p ON bp.passenger_id = p.passenger_id 
-            WHERE bp.flight_id = ? AND bp.seat_type_id = ?;`,
-      [flightId, seatsTypeId],
-    );
-    return passengersData;
+    const queryResult: BoardingPass[] = await prisma.boardingPass.findMany({
+      where: {
+        flight_id: Number(flightId),
+        seat_type_id: seatsTypeId,
+      },
+      select: {
+        boarding_pass_id: true,
+        purchase_id: true,
+        seat_type_id: true,
+        seat_id: true,
+        passenger: {
+          select: {
+            passenger_id: true,
+            dni: true,
+            name: true,
+            age: true,
+            country: true,
+          },
+        },
+      },
+    });
+
+    const passengers: Passenger[] = queryResult.map(bp => ({
+      boarding_pass_id: bp.boarding_pass_id,
+      purchase_id: bp.purchase_id,
+      seat_type_id: bp.seat_type_id,
+      seat_id: bp.seat_id,
+      ...bp.passenger,
+    }));
+
+    return passengers
   } catch (err) {
     console.error(err);
     throw err;
@@ -40,14 +69,14 @@ export async function getPassengersFromFlightWithType(
 // Get all seat_type_id from the passengers on flight_id
 export async function getAllSeatTypesIdsFromPassengers(flightId: string) {
   try {
-    const [passengersData] = await dbPool.execute<SeatType[]>(
-      `SELECT DISTINCT bp.seat_type_id
-            FROM boarding_pass bp
-            WHERE bp.flight_id = ?
-            ORDER BY bp.seat_type_id;`,
-      [flightId],
-    );
-    return passengersData;
+    const passengers: SeatType[] = await prisma.boardingPass.findMany({
+      where: { flight_id: Number(flightId) },
+      distinct: ['seat_type_id'],
+      orderBy: { seat_type_id: 'asc' },
+      select: { seat_type_id: true }
+    })
+
+    return passengers;
   } catch (err) {
     console.error(err);
     throw err;
