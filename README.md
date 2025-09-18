@@ -1,6 +1,6 @@
 # Flights API
 
-Migration from old API created in JS to TS
+Challenge made on JS and now migrated to TS with a Postgres DB via Docker Compose and added migrations via Prisma
 
 ## Description
 
