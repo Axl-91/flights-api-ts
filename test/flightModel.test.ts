@@ -1,12 +1,11 @@
-import { expect, test, vi } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import prisma from "../src/__mocks__/db";
 import { getFlightData } from "../src/models/flightModel";
 import createHttpError from "http-errors";
-import { describe } from "node:test";
 
 vi.mock("../src/db.ts");
 
-void describe("getFlightData correct functionality", () => {
+describe("getFlightData correct functionality", () => {
   test("getFlightData returns the data from the flight", async () => {
     const flightId = "1";
 
@@ -26,7 +25,7 @@ void describe("getFlightData correct functionality", () => {
   });
 });
 
-void describe("getFlightData error handling", () => {
+describe("getFlightData error handling", () => {
   test("getFlightData returns not found error when no flight is found", async () => {
     prisma.flight.findUnique.mockResolvedValue(null);
 
