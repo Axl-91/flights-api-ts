@@ -1,11 +1,11 @@
 import prisma from "../db";
 
 export interface BoardingPass {
-  boarding_pass_id: number,
-  purchase_id: number,
-  seat_type_id: number,
-  seat_id: number | null,
-  passenger: PassengerAux
+  boarding_pass_id: number;
+  purchase_id: number;
+  seat_type_id: number;
+  seat_id: number | null;
+  passenger: PassengerAux;
 }
 
 export interface PassengerAux {
@@ -16,8 +16,7 @@ export interface PassengerAux {
   country: string;
 }
 
-export type Passenger =
-  PassengerAux & Omit<BoardingPass, 'passenger'>;
+export type Passenger = PassengerAux & Omit<BoardingPass, "passenger">;
 
 export interface SeatType {
   seat_type_id: number;
@@ -51,7 +50,7 @@ export async function getPassengersFromFlightWithType(
       },
     });
 
-    const passengers: Passenger[] = queryResult.map(bp => ({
+    const passengers: Passenger[] = queryResult.map((bp) => ({
       boarding_pass_id: bp.boarding_pass_id,
       purchase_id: bp.purchase_id,
       seat_type_id: bp.seat_type_id,
@@ -59,7 +58,7 @@ export async function getPassengersFromFlightWithType(
       ...bp.passenger,
     }));
 
-    return passengers
+    return passengers;
   } catch (err) {
     console.error(err);
     throw err;
@@ -71,10 +70,10 @@ export async function getAllSeatTypesIdsFromPassengers(flightId: string) {
   try {
     const passengers: SeatType[] = await prisma.boardingPass.findMany({
       where: { flight_id: Number(flightId) },
-      distinct: ['seat_type_id'],
-      orderBy: { seat_type_id: 'asc' },
-      select: { seat_type_id: true }
-    })
+      distinct: ["seat_type_id"],
+      orderBy: { seat_type_id: "asc" },
+      select: { seat_type_id: true },
+    });
 
     return passengers;
   } catch (err) {

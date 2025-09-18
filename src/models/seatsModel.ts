@@ -28,10 +28,7 @@ export async function getSeatsFromAirplaneWithSeatType(
         airplane_id: airplaneId,
         seat_type_id: typeId,
       },
-      orderBy: [
-        { seat_column: 'asc' },
-        { seat_row: 'asc' },
-      ],
+      orderBy: [{ seat_column: "asc" }, { seat_row: "asc" }],
       select: {
         seat_id: true,
         seat_column: true,
