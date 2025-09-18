@@ -19,7 +19,9 @@ app.get("/flights/:id/passengers", async (req, res) => {
       passengers: passengers,
     };
 
-    const flightResponse: FlightResponse = camelcaseKeys(flightWithPassengers, { deep: true });
+    const flightResponse: FlightResponse = camelcaseKeys(flightWithPassengers, {
+      deep: true,
+    });
 
     res.json({
       code: 200,
