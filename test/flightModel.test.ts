@@ -1,22 +1,67 @@
 import { expect, test, vi } from "vitest";
 import prisma from "../src/__mocks__/db";
 import { getFlightData } from "../src/models/flightModel";
+import createHttpError from "http-errors";
+import { describe } from "node:test";
 
 vi.mock("../src/db.ts");
 
-test("createUser should return the generated user", async () => {
-  const flights = {
-    flight_id: 1,
-    takeoff_date_time: 20200101,
-    takeoff_airport: "Airport 1",
-    landing_date_time: 20200101,
-    landing_airport: "Airport 2",
-    airplane_id: 1,
-  };
+void describe("getFlightData correct functionality", () => {
+  test("getFlightData returns the data from the flight", async () => {
+    const flightId = "1";
 
-  prisma.flight.findUnique.mockResolvedValue(flights);
+    const flightData = {
+      flight_id: 1,
+      takeoff_date_time: 20200101,
+      takeoff_airport: "Airport 1",
+      landing_date_time: 20200101,
+      landing_airport: "Airport 2",
+      airplane_id: 1,
+    };
 
-  const flightsFromModel = await getFlightData("1");
+    prisma.flight.findUnique.mockResolvedValue(flightData);
 
-  expect(flightsFromModel).toEqual(flights);
+    const response = await getFlightData(flightId);
+    expect(response).toStrictEqual(flightData);
+  });
+});
+
+void describe("getFlightData error handling", () => {
+  test("getFlightData returns not found error when no flight is found", async () => {
+    prisma.flight.findUnique.mockResolvedValue(null);
+
+    const randomId = Math.floor(Math.random() * 10000).toString();
+
+    await expect(getFlightData(randomId)).rejects.toThrowError(
+      createHttpError.NotFound,
+    );
+
+    await expect(getFlightData(randomId)).rejects.toMatchObject({
+      status: 404,
+      message: "{}",
+    });
+  });
+
+  test('sets message to "could not connect to db" for non-404 HttpError', async () => {
+    const dbError = createHttpError(500, "original message");
+
+    prisma.flight.findUnique.mockRejectedValue(dbError);
+
+    const randomId = Math.floor(Math.random() * 10000).toString();
+
+    await expect(getFlightData(randomId)).rejects.toThrowError(
+      createHttpError[500],
+    );
+
+    await expect(getFlightData(randomId)).rejects.toMatchObject({
+      status: 500,
+      message: "could not connect to db",
+    });
+  });
+
+  test("getFlightData throws the same error if there is an unknown error", async () => {
+    prisma.flight.findUnique.mockRejectedValue(new Error("Unknown error"));
+
+    await expect(getFlightData("1")).rejects.toThrow("Unknown error");
+  });
 });
