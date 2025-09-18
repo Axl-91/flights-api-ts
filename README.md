@@ -2,4 +2,52 @@
 
 Migration from old API created in JS to TS
 
-README in progress...
+## Setup
+
+Install dependencies
+
+```bash
+npm install
+```
+
+### Env Vars
+Create an `.env` file with the following format
+
+``` dotenv
+# Server port
+PORT=
+
+#DB data
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_DB=
+
+DATABASE_URL="postgresql://<DB_USER>:<DB_PASSWORD>@localhost:5432/<DB_NAME>"
+```
+
+Complete the values on the `.env` files
+
+### Setup db
+
+```bash
+# generate prisma client
+npx prisma generate
+
+# apply all migrations
+npx prisma migrate dev
+
+# Run seeds
+npx prisma db seed
+```
+
+
+## Run server
+
+```bash
+# Run on development mode
+npm run dev
+
+# Build and run in production
+npm build
+npm start
+```
