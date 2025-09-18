@@ -27,6 +27,7 @@ export async function getFlightData(flightId: string): Promise<Flight> {
     const flightData: Flight | null = await prisma.flight.findUnique({
       where: { flight_id: Number(flightId) },
     });
+    console.log(`FOUND: ${flightData}`)
 
     if (!flightData) {
       throw createHttpError(404, "{}");
