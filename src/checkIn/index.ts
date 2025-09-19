@@ -1,7 +1,4 @@
-import {
-  getPassengersFromFlightWithType,
-  Passenger,
-} from "../models/passengersModel";
+import { getPassengersFromFlight, Passenger } from "../models/passengersModel";
 import { getSeatTypesFromFlight, SeatType } from "../models/seatsModel";
 import { assignPassengers } from "./assignSeats";
 import { groupByPurchase, sortGroupedPassengers } from "./passengers";
@@ -16,10 +13,7 @@ export async function simulateCheckIn(flightId: string, airplaneId: number) {
 
   for (const seatTypeId of seatTypesIds) {
     // Get Passengers for flight and with the correspondat seat type
-    const passengers = await getPassengersFromFlightWithType(
-      flightId,
-      seatTypeId,
-    );
+    const passengers = await getPassengersFromFlight(flightId, seatTypeId);
     // Group the passengers by their purchase id
     const groupedPassengers = groupByPurchase(passengers);
     // Sort this passengers
