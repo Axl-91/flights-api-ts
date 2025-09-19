@@ -1,25 +1,14 @@
 import createHttpError, { isHttpError } from "http-errors";
 import prisma from "../db";
-import { Passenger } from "./passengersModel";
 
-export interface Flight {
+export type Flight = {
   flight_id: number;
   takeoff_date_time: number;
   takeoff_airport: string;
   landing_date_time: number;
   landing_airport: string;
   airplane_id: number;
-}
-
-export interface FlightResponse {
-  flightId: number;
-  takeoffDateTime: number;
-  takeoffAirport: string;
-  landingDateTime: number;
-  landingAirport: string;
-  airplaneId: number;
-  passengers: Passenger[];
-}
+};
 
 // Get data from the flight correspondant to flight_id
 export async function getFlightData(flightId: string): Promise<Flight> {

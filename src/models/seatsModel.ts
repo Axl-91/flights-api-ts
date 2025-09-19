@@ -1,25 +1,25 @@
 import prisma from "../db";
 
-export interface Seat {
+export type Seat = {
   seat_id: number;
   seat_column: string;
   seat_row: number;
-}
+};
 
-export interface RowSeat {
+export type RowSeat = {
   seat_id: number;
   occupied: boolean;
-}
+};
 
-export interface SeatsByRow {
+export type SeatsByRow = {
   row: number;
   seats: (RowSeat | null)[];
   quantity: number;
-}
+};
 
-export interface SeatType {
+export type SeatType = {
   seat_type_id: number;
-}
+};
 
 // Get all the seats from the selected airplane_id and seat_type_id
 export async function getSeatsFromAirplane(airplaneId: number, typeId: number) {

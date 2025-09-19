@@ -1,10 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 import prisma from "../src/__mocks__/db";
-import {
-  BoardingPass,
-  getPassengersFromFlight,
-  PassengerAux,
-} from "../src/models/passengersModel";
+import { getPassengersFromFlight } from "../src/models/passengersModel";
+import { Passenger } from "../generated/prisma";
 
 vi.mock("../src/db.ts");
 
@@ -13,14 +10,15 @@ describe("functions correct functionality", () => {
     const flightId = "1";
     const typeId = 1;
 
-    const passengersData: PassengerAux = {
+    const passengersData: Passenger = {
       passenger_id: 1,
       dni: "1234",
       name: "name",
       age: 20,
       country: "Country",
     };
-    const boardingPassData: BoardingPass = {
+
+    const boardingPassData = {
       boarding_pass_id: 1,
       purchase_id: 1,
       seat_type_id: 1,

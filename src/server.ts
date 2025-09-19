@@ -17,9 +17,9 @@ const shutdown = async () => {
 };
 
 process.on("SIGINT", () => {
-  void shutdown;
+  void shutdown();
 });
 
 process.on("SIGTERM", () => {
-  void shutdown;
+  void shutdown();
 });
