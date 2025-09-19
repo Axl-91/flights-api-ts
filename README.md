@@ -2,11 +2,29 @@
 
 Challenge made on JS, now migrated to TS with a Postgres DB via Docker Compose and added migrations via Prisma
 
-## Description
+## Summary
+API that simulates check-in for all passengers of a flight.
 
-API that simulates a check-in for all the passengers of flight.
+Given a flight with a set of passengers assigned to an airplane, this API will simulate the best possible seating arrangement.
 
-Given an amount of passangers in a flight and assigned to a plane this API will simulate the best possible seatting of those persons in the plane.
+## Database Schema
+The database contains the following tables:
+- Airplane
+- Flight
+- Passenger
+- Purchase
+- Seat
+- SeatType
+- BoardingPass
+
+## Objective
+The main objective of the API is to simulate a check-in.  
+
+Given a `flight_id`, the system must collect the passengers of that flight and assign the most suitable seat for each of them, following these rules:
+
+- Passengers belonging to the same purchase (`purchase_id`) should be seated together.  
+- If there is a minor in the group, they must be seated in an adjacent row to an adult from their same group.  
+- Some passengers may already have an assigned seat, which must be respected.
 
 ## Setup
 
