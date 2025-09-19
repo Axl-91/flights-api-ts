@@ -2,7 +2,7 @@ import { Passenger } from "../models/passengersModel";
 import {
   RowSeat,
   SeatsByRow,
-  getSeatsFromAirplaneWithSeatType,
+  getSeatsFromAirplane,
 } from "../models/seatsModel";
 
 // Check if the seat is assigned to some passenger
@@ -16,7 +16,7 @@ export async function createSeatsMap(
   airplaneId: number,
   seatsTypeId: number,
 ) {
-  const seats = await getSeatsFromAirplaneWithSeatType(airplaneId, seatsTypeId);
+  const seats = await getSeatsFromAirplane(airplaneId, seatsTypeId);
   const grouped: Record<number, SeatsByRow> = {};
 
   const allColumns = [...new Set(seats.map((seat) => seat.seat_column))].sort();

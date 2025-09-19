@@ -1,9 +1,8 @@
 import {
-  getAllSeatTypesIdsFromPassengers,
   getPassengersFromFlightWithType,
   Passenger,
-  SeatType,
 } from "../models/passengersModel";
+import { getSeatTypesFromFlight, SeatType } from "../models/seatsModel";
 import { assignPassengers } from "./assignSeats";
 import { groupByPurchase, sortGroupedPassengers } from "./passengers";
 import { createSeatsMap } from "./seatsMap";
@@ -11,7 +10,7 @@ import { createSeatsMap } from "./seatsMap";
 // Given a flight and an airplaine it will simulate the seat assignments for all passengers
 export async function simulateCheckIn(flightId: string, airplaneId: number) {
   const passengersWithSeats: Passenger[] = [];
-  const seatTypesIds = (await getAllSeatTypesIdsFromPassengers(flightId)).map(
+  const seatTypesIds = (await getSeatTypesFromFlight(flightId)).map(
     (st: SeatType) => st.seat_type_id,
   );
 
