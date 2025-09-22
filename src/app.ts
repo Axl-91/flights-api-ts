@@ -1,5 +1,6 @@
 import express from "express";
 import camelcaseKeys from "camelcase-keys";
+import cors from 'cors'
 import { isHttpError } from "http-errors";
 import { getFlightData } from "./models/flightModel";
 import { simulateCheckIn } from "./checkIn";
@@ -7,6 +8,7 @@ import { simulateCheckIn } from "./checkIn";
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 app.get("/flights/:id/passengers", async (req, res) => {
   const flightId = req.params.id;
