@@ -1,6 +1,6 @@
 import express from "express";
 import camelcaseKeys from "camelcase-keys";
-import cors from 'cors'
+import cors from "cors";
 import { isHttpError } from "http-errors";
 import { getFlightData } from "./models/flightModel";
 import { simulateCheckIn } from "./checkIn";
