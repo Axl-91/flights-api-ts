@@ -149,7 +149,6 @@ export function getFreeSeat(
       }
     }
   }
-  throw new Error("Flight already full");
 }
 
 // Search for a seat that is adjacent to the one assigned to a passenger of their group

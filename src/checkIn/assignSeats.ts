@@ -9,6 +9,11 @@ function assignSeatToPassenger(
   seatsMap: SeatsByRow[],
 ) {
   const seatId = getFreeSeat(assignedPassengers, seatsMap);
+  // TODO: Find a way to always seat somebody the closest to their group
+  if (!seatId) {
+    assignSeatsToFreeGroup([passenger], seatsMap);
+    return;
+  }
   passenger.seat_id = seatId;
   assignedPassengers.push(passenger);
 }
@@ -76,7 +81,8 @@ function assignSeatsToFreeGroup(
   const freeSeat = findBestFreeSeat(seatsMap[maxRow].seats);
   seatsMap[maxRow].quantity--;
 
-  if (!passenger || !freeSeat) throw new Error("Flight already full");
+  if (!passenger || !freeSeat)
+    throw new Error("Flight already full")
 
   freeSeat.occupied = true;
   passenger.seat_id = freeSeat.seat_id;
