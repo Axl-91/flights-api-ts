@@ -1,4 +1,5 @@
 import prisma from "../db";
+import { Flight } from "./flightModel";
 
 export type Seat = {
   seat_id: number;
@@ -20,6 +21,28 @@ export type SeatsByRow = {
 export type SeatType = {
   seat_type_id: number;
 };
+
+// Get all the seats from the selected airplane_id and seat_type_id
+export async function getAllSeatsFromFlight(flightId: string) {
+  const flight: Flight | null = await prisma.flight.findUnique({
+    where: { flight_id: Number(flightId) },
+  });
+
+  const airplaneId = flight!.airplane_id;
+
+  const seats: Seat[] = await prisma.seat.findMany({
+    where: {
+      airplane_id: airplaneId,
+    },
+    orderBy: [{ seat_column: "asc" }, { seat_row: "asc" }],
+    select: {
+      seat_id: true,
+      seat_column: true,
+      seat_row: true,
+    },
+  });
+  return seats;
+}
 
 // Get all the seats from the selected airplane_id and seat_type_id
 export async function getSeatsFromAirplane(airplaneId: number, typeId: number) {

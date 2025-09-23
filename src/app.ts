@@ -4,6 +4,7 @@ import cors from "cors";
 import { isHttpError } from "http-errors";
 import { getFlightData } from "./models/flightModel";
 import { simulateCheckIn } from "./checkIn";
+import { getAllSeatsFromFlight } from "./models/seatsModel";
 
 const app = express();
 
@@ -39,6 +40,21 @@ app.get("/flights/:id/passengers", async (req, res) => {
       console.error(err);
       res.status(400).json({ code: 400, data: "Unknown error" });
     }
+  }
+});
+
+app.get("/flights/:id/seats", async (req, res) => {
+  const flightId = req.params.id;
+
+  try {
+    const seats = await getAllSeatsFromFlight(flightId);
+
+    res.json({
+      code: 200,
+      data: seats,
+    });
+  } catch (err) {
+    res.status(500).json({ code: 500, data: err });
   }
 });
 

@@ -81,8 +81,7 @@ function assignSeatsToFreeGroup(
   const freeSeat = findBestFreeSeat(seatsMap[maxRow].seats);
   seatsMap[maxRow].quantity--;
 
-  if (!passenger || !freeSeat)
-    throw new Error("Flight already full")
+  if (!passenger || !freeSeat) throw new Error("Flight already full");
 
   freeSeat.occupied = true;
   passenger.seat_id = freeSeat.seat_id;
