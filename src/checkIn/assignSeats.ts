@@ -9,11 +9,6 @@ function assignSeatToPassenger(
   seatsMap: SeatsByRow[],
 ) {
   const seatId = getFreeSeat(assignedPassengers, seatsMap);
-  // TODO: Find a way to always seat somebody the closest to their group
-  if (!seatId) {
-    assignSeatsToFreeGroup([passenger], seatsMap);
-    return;
-  }
   passenger.seat_id = seatId;
   assignedPassengers.push(passenger);
 }

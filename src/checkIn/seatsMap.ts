@@ -1,3 +1,4 @@
+import { getDirections } from "../common/utils";
 import { Passenger } from "../models/passengersModel";
 import {
   RowSeat,
@@ -108,40 +109,28 @@ export function getFreeSeat(
   seatsMap: SeatsByRow[],
 ) {
   const rowsQuantity = seatsMap.length;
-  const seatsQuantity = seatsMap[0].seats.length;
-
-  // Define directions to search
-  const directions = [
-    { dr: 0, dc: +1 },
-    { dr: 0, dc: -1 },
-    { dr: +1, dc: 0 },
-    { dr: -1, dc: 0 },
-    { dr: 1, dc: 1 },
-    { dr: 1, dc: -1 },
-    { dr: -1, dc: 1 },
-    { dr: -1, dc: -1 },
-  ];
+  const colsQuantity = seatsMap[0].seats.length;
 
   // Expand outward with increasing offset
   for (
     let offset = 1;
-    offset < Math.max(rowsQuantity, seatsQuantity);
+    offset < Math.max(rowsQuantity, colsQuantity);
     offset++
   ) {
+    const directions = getDirections(offset)
     for (const { dr, dc } of directions) {
       for (const assignedPassenger of assignedPassengers) {
         const { rowAssigned, colAssigned } = getRowAndColFromPassenger(
           assignedPassenger,
           seatsMap,
         );
+        const row = rowAssigned + dr;
+        const col = colAssigned + dc;
 
-        const r = rowAssigned + dr * offset;
-        const c = colAssigned + dc * offset;
-
-        if (r >= 0 && r < rowsQuantity && c >= 0 && c < seatsQuantity) {
-          const newSeat = seatsMap[r].seats[c];
+        if (row >= 0 && row < rowsQuantity && col >= 0 && col < colsQuantity) {
+          const newSeat = seatsMap[row].seats[col];
           if (newSeat && !newSeat.occupied) {
-            seatsMap[r].quantity--;
+            seatsMap[row].quantity--;
             newSeat.occupied = true;
             return newSeat.seat_id;
           }
@@ -149,6 +138,7 @@ export function getFreeSeat(
       }
     }
   }
+  throw new Error("Flight full")
 }
 
 // Search for a seat that is adjacent to the one assigned to a passenger of their group
