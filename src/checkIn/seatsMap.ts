@@ -1,4 +1,4 @@
-import { getDirections } from "../common/utils";
+import { getChebyshevDistanceDirs } from "../common/utils";
 import { Passenger } from "../models/passengersModel";
 import {
   RowSeat,
@@ -117,7 +117,8 @@ export function getFreeSeat(
     offset < Math.max(rowsQuantity, colsQuantity);
     offset++
   ) {
-    const directions = getDirections(offset);
+    const directions = getChebyshevDistanceDirs(offset);
+
     for (const { dr, dc } of directions) {
       for (const assignedPassenger of assignedPassengers) {
         const { rowAssigned, colAssigned } = getRowAndColFromPassenger(
