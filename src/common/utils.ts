@@ -1,7 +1,7 @@
 type Direction = {
   dr: number;
   dc: number;
-}
+};
 
 export function getDirections(offset: number): Direction[] {
   const horizontal: Direction[] = [];

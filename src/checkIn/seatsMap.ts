@@ -117,7 +117,7 @@ export function getFreeSeat(
     offset < Math.max(rowsQuantity, colsQuantity);
     offset++
   ) {
-    const directions = getDirections(offset)
+    const directions = getDirections(offset);
     for (const { dr, dc } of directions) {
       for (const assignedPassenger of assignedPassengers) {
         const { rowAssigned, colAssigned } = getRowAndColFromPassenger(
@@ -138,7 +138,7 @@ export function getFreeSeat(
       }
     }
   }
-  throw new Error("Flight full")
+  throw new Error("Flight full");
 }
 
 // Search for a seat that is adjacent to the one assigned to a passenger of their group
