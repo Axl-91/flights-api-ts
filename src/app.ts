@@ -5,13 +5,14 @@ import { isHttpError } from "http-errors";
 import { getFlightData } from "./models/flightModel";
 import { simulateCheckIn } from "./checkIn";
 import { getAllSeatsFromFlight } from "./models/seatsModel";
+import type { Request, Response } from 'express'
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
-app.get("/flights/:id/passengers", async (req, res) => {
+app.get("/flights/:id/passengers", async (req: Request, res: Response) => {
   const flightId = req.params.id;
   try {
     const flight = await getFlightData(flightId);

@@ -1,17 +1,23 @@
 services:
-  postgres:
-    image: postgres:latest
+  db:
+    image: postgres:18-alpine
+    container_name: flights-db
     env_file:
       - .env
-    restart: always
+    restart: unless-stopped
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
-    volumes:
-      - postgres:/var/lib/postgresql/data
     ports:
-      - '5432:5432'
-volumes:
-  postgres:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - flights-db-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ot -d ot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
+volumes:
+  flights-db-data:
