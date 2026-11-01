@@ -88,4 +88,4 @@ This endpoint will return all seats from a flight
 
 ## Frontend integration
 
-Alongside with this server there is a frontend [flights-frontend](https://github.com/Axl-91/flights-frontend) [WIP]
+Alongside with this server there is a frontend [flights-frontend](https://github.com/Axl-91/flights-frontend)
